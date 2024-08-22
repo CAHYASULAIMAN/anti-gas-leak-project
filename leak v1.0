@@ -1,0 +1,33 @@
+#include <Wire.h>
+
+// Pin for MQ2 sensor
+const int gasSensorPin = A0;
+
+// Pin for relay blower
+const int blowerPin = 7;
+
+// Threshold gas in ppm
+const int gasThreshold = 600;
+
+void setup() {
+  pinMode(blowerPin, OUTPUT);
+  digitalWrite(blowerPin, LOW);  // Blower off
+  Serial.begin(9600);
+}
+
+void loop() {
+  int gasLevel = analogRead(gasSensorPin);
+  float voltage = gasLevel * (5.0 / 1023.0);
+  float ppm = (voltage - 0.1) * 1000;
+
+  Serial.print("Gas PPM: ");
+  Serial.println(ppm);
+
+  if (ppm > gasThreshold) {
+    digitalWrite(blowerPin, HIGH);  // Blower on
+  } else {
+    digitalWrite(blowerPin, LOW);   // Blower off
+  }
+
+  delay(1000); // Update in the 1 sec
+}
